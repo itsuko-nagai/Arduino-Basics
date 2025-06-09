@@ -1,0 +1,133 @@
+#include <Wire.h>  //I2C library to communicate with mpu6050
+#include <MPU6050.h>
+
+MPU6050 mpu;    //an obj of MPU6050
+
+int16_t ax, ay, az;   //accelerometer data
+int16_t gx, gy, gz;    //gyroscope data
+
+float angleX=0,angleY=0,angleZ=0;
+unsigned long prevTime;
+
+void setup(){
+Serial.begin(9600);    //start serial monitor
+Wire.begin();      //start I2C communication
+mpu.initialize();      //initialize mpu6050 sensor
+
+//check whether MPU6050 is connected or not
+if(mpu.testConnection()){
+   Serial.println("MPU6050 connected");
+   }
+else{
+   Serial.println("MPU6050 connection failed");
+   while(1);    //stop here if connection failed
+    }
+
+
+prevTime=millis();    // store previous time
+}
+
+
+void loop(){
+mpu.getMotion6(&ax,&ay,&az,&gx,&gy,&gz);      //reads the accelerometer and gyroscope values from sensor
+
+
+ang_vel();   //calculate angular velocity
+
+
+unsigned long currTime=millis();   //current time
+
+
+//calculating time diff since last reading in sec
+float dt=(currTime-prevTime)/1000.0;        //dt=time in sec
+12:15 09-06-202512:15 09-06-2025
+12:15 09-06-2025
+rot_angl();      //calculate rotation angle
+
+
+
+cal_tilt();       //calculate tilt(i.e pitch and roll)
+
+
+//detect fast movement(i.e for alert)
+if(abs(gX)>150 || abs(gY)>150 || abs(gZ)>150){
+    Serial.println("Motion detected");
+}
+
+
+//print all sensor data
+Serial.println("-----GYROSCOPE FULL DATA------");
+
+
+//angular velocity
+Serial.println("ANGULAR VELOCITY(deg/sec):");
+Serial.println("X:");
+Serial.print(gX);
+Serial.println("Y:");
+Serial.print(gY);
+Serial.println("Z:");
+Serial.print(gZ);
+
+
+//rotation angle
+Serial.println("ROTATION ANGLE(deg):");
+Serial.println("X:");
+Serial.print(angleX);
+Serial.println("Y:");
+Serial.print(angleY);
+Serial.println("Z:");
+Serial.print(angleZ);
+
+
+//tilt(pitch and roll)
+Serial.println("pitch:");
+Serial.print(pitch);
+Serial.println("roll:");
+Serial.print(roll);
+
+Serial.println("--------------------------------------");
+
+
+prevTime=currTime;          //update previous time as current time for next loop
+
+delay(5000);
+}
+
+
+void ang_vel(){
+//angular velocity
+//converting the raw data received from sensors to degree/sec
+float gx=gx/131.0;
+float gy=gy/131.0;
+float gz=gz/131.0;
+}
+
+
+void rot_angle(){
+//calculate rotation angle
+angleX+=gX*dt;                      //angle=angular_velocity*time
+angleY+=gY*dt;
+angleZ+=gZ*dt;
+}
+
+
+void cal_tilt(){
+//calculate tilt using accelerometer(pitch &roll)
+//pitch =rotation around X axis & roll=rotation around Y axis
+float pitch=atan2(ax,sqrt(ay*ay + az*az)*180.0/PI;
+float roll=atan2(ay,sqrt(ax*ax + az*az)*180.0/PI;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
